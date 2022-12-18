@@ -25,6 +25,7 @@ def BasicAnalysis(oridata):
             lastcnt = datacnt[i]
         elif lastcnt == datacnt[i]:
             print(dataori[i], end = " ")
+    return datacnt, dataori
     
 def sortcnt(datacnt, dataori, rangenum=81):
     for i in range(rangenum):
@@ -114,7 +115,8 @@ if __name__ == "__main__":
             if n != -1:
                 for i in range(n):
                     tmpdata = input("please input the data #{}: ".format(i + 1)).strip().split(' ')
-                    tmpdata = [int(item) for item in tmpdata]
+                    for item in tmpdata:
+                        _datainrow.append(int(item))
                     _datainrow.append(int(item) for item in tmpdata)
                     ori_data.append(tmpdata)
             else:
@@ -122,9 +124,9 @@ if __name__ == "__main__":
                 fileadd = "{}{}{}{}".format(predict_path, "kl8/", filename, ".csv")
                 ori_data = pd.read_csv(fileadd).values
                 for row in ori_data:
-                    _datainrow.append(int(item) for item in row)
-                
-            BasicAnalysis(ori_data)
+                    for item in row:
+                        _datainrow.append(item)           
+            datacnt, dataori = BasicAnalysis(ori_data)
             print()
             currentnums = input("input current numbaers, -1 means oever: ").split(' ')
             if currentnums[0] != -1:
@@ -136,7 +138,19 @@ if __name__ == "__main__":
                             curcnt += 1
                             break
                 totalnums = len(list(set(_datainrow)))
-                print("total success / total nums: ", curcnt)
+                print("total success / total nums: {} / {}".format(curcnt, totalnums))
+                lastcnt = -1
+                for i in range(81):
+                    if dataori[i] == 0:
+                        continue
+                    elif dataori[i] in curnums:
+                        if lastcnt != datacnt[i]:
+                            print()
+                            print("{}: {}".format(datacnt[i], dataori[i]), end = " ")
+                            lastcnt = datacnt[i]
+                        elif lastcnt == datacnt[i]:
+                            print(dataori[i], end = " ")
+                print()
 
         elif choice == 2:
             oridata, booldata = getdata()

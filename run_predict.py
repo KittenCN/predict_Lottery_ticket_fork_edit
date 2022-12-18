@@ -13,11 +13,14 @@ from config import *
 # from get_data import get_current_number, spider
 from loguru import logger
 from common import *
+import pandas as pd
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--name', default="ssq", type=str, help="选择训练数据")
 parser.add_argument('--windows_size', default='3', type=str, help="训练窗口大小,如有多个，用'，'隔开")
 args = parser.parse_args()
+filedata = []
+filetitle = []
 
 # 关闭eager模式
 tf.compat.v1.disable_eager_execution()
@@ -207,6 +210,7 @@ def get_final_result(name, predict_features, mode=0):
         }
 
 def run(name):
+    global filedata, filetitle
     windows_size = model_args[name]["model_args"]["windows_size"]
     diff_number = windows_size - 1
     data = spider(name, str(int(current_number) - diff_number), current_number, "predict")
@@ -215,13 +219,19 @@ def run(name):
     # logger.info("预测结果：{}".format(get_final_result(name, predict_features_)))
     predict_dict = get_final_result(name, predict_features_)
     ans = ""
+    _data = []
+    filetitle = []
     for item in predict_dict:
         if (item == "红球_1" or item == "红球"):
             ans += "红球："
         if (item == "蓝球_1" or item == "蓝球"):
             ans += "蓝球："
         ans += str(predict_dict[item]) + " "
+        _data.append(int(predict_dict[item]))
+        filetitle.append(item)
     logger.info("预测结果：{}".format(ans))
+    filedata.append(_data.copy())
+    
 
 
 if __name__ == '__main__':
@@ -241,4 +251,11 @@ if __name__ == '__main__':
             current_number = get_current_number(args.name)
             run_predict(int(size))
             run(args.name)
+        filename = datetime.datetime.now().strftime('%Y%m%d')
+        filepath = "{}{}/".format(predict_path, args.name)
+        fileadd = "{}{}{}".format(filepath, filename, ".csv")
+        if not os.path.exists(filepath):
+            os.makedirs(filepath)
+        df = pd.DataFrame(filedata, columns=filetitle)
+        df.to_csv(fileadd, encoding="utf-8",index=False)
         
