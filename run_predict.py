@@ -86,7 +86,7 @@ def run_predict(window_size):
         logger.info("已加载蓝球模型！窗口大小:{}".format(model_args[args.name]["model_args"]["windows_size"]))
 
         # 加载关键节点名
-        with open("{}/{}/{}".format(model_path,args.name , pred_key_name)) as f:
+        with open("{}/{}".format(model_path + model_args[args.name]["pathname"]['name'] + str(model_args[args.name]["model_args"]["windows_size"]), pred_key_name)) as f:
             pred_key_d = json.load(f)
 
         current_number = get_current_number(args.name)
@@ -103,7 +103,7 @@ def run_predict(window_size):
         logger.info("已加载红球模型！窗口大小:{}".format(model_args[args.name]["model_args"]["windows_size"]))
 
         # 加载关键节点名
-        with open("{}/{}/{}".format(model_path,args.name , pred_key_name)) as f:
+        with open("{}/{}".format(model_path + model_args[args.name]["pathname"]['name'] + str(model_args[args.name]["model_args"]["windows_size"]), pred_key_name)) as f:
             pred_key_d = json.load(f)
 
         current_number = get_current_number(args.name)
